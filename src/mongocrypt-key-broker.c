@@ -536,7 +536,10 @@ _mongocrypt_key_broker_add_doc (_mongocrypt_key_broker_t *kb,
                                                  kb->crypt->crypto)) {
          mongocrypt_kms_ctx_status (&key_returned->kms, kb->status);
          _key_broker_fail (kb);
-         goto done;
+         key_returned->decrypted = true;
+         if (!_store_to_cache (kb, key_returned)) {
+            goto done;
+         }
       }
    } else if (kek_provider == MONGOCRYPT_KMS_PROVIDER_AZURE) {
       if (kms_providers->azure.access_token) {
